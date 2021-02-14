@@ -6,31 +6,13 @@ pcall(require, "luarocks.loader")
 local gears = require("gears")
 local awful = require("awful")
 require("awful.autofocus")
---Use collision (in ~./config/awesome/collision, the way to control floating windows when you don't have title bars
---require("collision")()
---Wibar but better i think
---local base16 = require("base16")
--- My wibars
---local wibars = require("wibars")
---local arrowlain = wibars.arrowlain
-
-local awesome, client, mouse, screen, tag = awesome, client, mouse, screen, tag
-local ipairs, string, os, table, tostring, tonumber, type = ipairs, string, os, table, tostring, tonumber, type
--- Enable Alt-Tab
 -- Widget and layout library
 local wibox = require("wibox")
 -- Theme handling library
 local beautiful = require("beautiful")
---local multicolor = require("beautiful.multicolor")
 -- Notification library
 local naughty = require("naughty")
-local lain = require("lain")
 local menubar = require("menubar")
-local freedesktop = require("freedesktop")
-local hotkeys_popup = require("awful.hotkeys_popup").widget
-                     require("awful.hotkeys_popup.keys")
-local my_table      = awful.util.table or gears.table -- 4.{0,1} compatibility
-local dpi           = require("beautiful.xresources").apply_dpi
 local hotkeys_popup = require("awful.hotkeys_popup")
 -- Enable hotkeys help widget for VIM and other apps
 -- when client with a matching name is opened:
@@ -39,11 +21,6 @@ require("awful.hotkeys_popup.keys")
 -- Load Debian menu entries
 local debian = require("debian.menu")
 local has_fdo, freedesktop = pcall(require, "freedesktop")
-
---Widgets:
-local cpu_widget = require("awesome-wm-widgets.cpu-widget.cpu-widget")
-local volumearc_widget = require("awesome-wm-widgets.volumearc-widget.volumearc")
-local ram_widget = require("awesome-wm-widgets.ram-widget.ram-widget")
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -72,12 +49,11 @@ end
 
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
---beautiful.init(gears.filesystem.get_themes_dir() .. "~/.config/awesome/themes/multicolor/theme.lua")
-beautiful.init(string.format("%s/.config/awesome/themes/%s/theme.lua", os.getenv("HOME"), "multicolor"))
+beautiful.init(gears.filesystem.get_themes_dir() .. "default/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
 terminal = "x-terminal-emulator"
-editor = os.getenv("vim") or "editor"
+editor = os.getenv("EDITOR") or "editor"
 editor_cmd = terminal .. " -e " .. editor
 
 -- Default modkey.
@@ -89,19 +65,19 @@ modkey = "Mod4"
 
 -- Table of layouts to cover with awful.layout.inc, order matters.
 awful.layout.layouts = {
+    awful.layout.suit.floating,
     awful.layout.suit.tile,
-    -- awful.layout.suit.floating,
-    -- awful.layout.suit.tile.left,
-    -- awful.layout.suit.tile.bottom,
-    -- awful.layout.suit.tile.top,
+    awful.layout.suit.tile.left,
+    awful.layout.suit.tile.bottom,
+    awful.layout.suit.tile.top,
     awful.layout.suit.fair,
-    -- awful.layout.suit.fair.horizontal,
-    -- awful.layout.suit.spiral,
-    -- awful.layout.suit.spiral.dwindle,
-    -- awful.layout.suit.max,
-    -- awful.layout.suit.max.fullscreen,
-    -- awful.layout.suit.magnifier,
-    -- awful.layout.suit.corner.nw,
+    awful.layout.suit.fair.horizontal,
+    awful.layout.suit.spiral,
+    awful.layout.suit.spiral.dwindle,
+    awful.layout.suit.max,
+    awful.layout.suit.max.fullscreen,
+    awful.layout.suit.magnifier,
+    awful.layout.suit.corner.nw,
     -- awful.layout.suit.corner.ne,
     -- awful.layout.suit.corner.sw,
     -- awful.layout.suit.corner.se,
@@ -237,40 +213,22 @@ awful.screen.connect_for_each_screen(function(s)
         buttons = tasklist_buttons
     }
 
-	--Create Volume arc
-	volumearc_widget({
-    main_color = '#af13f7',
-    mute_color = '#ff0000',
-    thickness = 5,
-    height = 25,
-    button_press = function(_, _, _, button)   -- Overwrites the button press behaviour to open pavucontrol when clicked
-        if (button == 1) then awful.spawn('pavucontrol --tab=3', false)
-        end
-    end
-})
-
     -- Create the wibox
-    s.mywibox = awful.wibar({ position = "top", screen = s, bg = beautiful.bg_normal .. "ff", opacity=0.9, height=20  })
+    s.mywibox = awful.wibar({ position = "top", screen = s })
 
     -- Add widgets to the wibox
     s.mywibox:setup {
         layout = wibox.layout.align.horizontal,
         { -- Left widgets
             layout = wibox.layout.fixed.horizontal,
-            --mylauncher,
-            s.mytaglist
-            --s.mypromptbox,
+            mylauncher,
+            s.mytaglist,
+            s.mypromptbox,
         },
         s.mytasklist, -- Middle widget
         { -- Right widgets
             layout = wibox.layout.fixed.horizontal,
-			volumearc_widget(),
-			ram_widget(),
-			cpu_widget(),
-			--awful.widget.watch('~/.config/awsome/temp.sh', 15),
-			--awful.widget.watch('bash -c "sensors | grep Core | awk \'{print $3}\' | sed -e \"s/+//\" | sed -e \"s/°C//\" | awk \'BEGIN { max = 0 }{if ($1 > max) max = $1} END {print max}\'"', 15),
-			awful.widget.watch('bash -c "maxtemp.sh"', 5),
-            --mykeyboardlayout,
+            mykeyboardlayout,
             wibox.widget.systray(),
             mytextclock,
             s.mylayoutbox,
@@ -281,10 +239,9 @@ end)
 
 -- {{{ Mouse bindings
 root.buttons(gears.table.join(
-    awful.button({ }, 3, function () mymainmenu:toggle() end)
-	--This is what makes the tabs cycle when you scroll on a gap (commented out coz annoying)
-    --awful.button({ }, 4, awful.tag.viewnext),
-    --awful.button({ }, 5, awful.tag.viewprev)
+    awful.button({ }, 3, function () mymainmenu:toggle() end),
+    awful.button({ }, 4, awful.tag.viewnext),
+    awful.button({ }, 5, awful.tag.viewprev)
 ))
 -- }}}
 
@@ -293,9 +250,9 @@ globalkeys = gears.table.join(
     awful.key({ modkey,           }, "s",      hotkeys_popup.show_help,
               {description="show help", group="awesome"}),
     awful.key({ modkey,           }, "Left",   awful.tag.viewprev,
-             {description = "view previous", group = "tag"}),
-   awful.key({ modkey,           }, "Right",  awful.tag.viewnext,
-             {description = "view next", group = "tag"}),
+              {description = "view previous", group = "tag"}),
+    awful.key({ modkey,           }, "Right",  awful.tag.viewnext,
+              {description = "view next", group = "tag"}),
     awful.key({ modkey,           }, "Escape", awful.tag.history.restore,
               {description = "go back", group = "tag"}),
 
@@ -339,7 +296,7 @@ globalkeys = gears.table.join(
               {description = "open a terminal", group = "launcher"}),
     awful.key({ modkey, "Control" }, "r", awesome.restart,
               {description = "reload awesome", group = "awesome"}),
-    awful.key({ modkey, "Shift"   }, "e", awesome.quit,
+    awful.key({ modkey, "Shift"   }, "q", awesome.quit,
               {description = "quit awesome", group = "awesome"}),
 
     awful.key({ modkey,           }, "l",     function () awful.tag.incmwfact( 0.05)          end,
@@ -372,9 +329,8 @@ globalkeys = gears.table.join(
               {description = "restore minimized", group = "client"}),
 
     -- Prompt
-    awful.key({ modkey },            "r",     function () 
-	awful.util.spawn("dmenu_run") end,
-              {description = "run dmenu", group = "launcher"}),
+    awful.key({ modkey,           }, "r", function () awful.spawn("rofi -show run") end,
+              {description = "run rofi prompt", group = "launcher"}),
 
     awful.key({ modkey }, "x",
               function ()
@@ -398,9 +354,9 @@ clientkeys = gears.table.join(
             c:raise()
         end,
         {description = "toggle fullscreen", group = "client"}),
-    awful.key({ modkey, "Shift"}, "q",      function (c) c:kill()                         end,
+    awful.key({ modkey, "Shift"   }, "c",      function (c) c:kill()                         end,
               {description = "close", group = "client"}),
-    awful.key({ modkey, "Shift" }, "f",  awful.client.floating.toggle                     ,
+    awful.key({ modkey, "Control" }, "space",  awful.client.floating.toggle                     ,
               {description = "toggle floating", group = "client"}),
     awful.key({ modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end,
               {description = "move to master", group = "client"}),
@@ -432,10 +388,8 @@ clientkeys = gears.table.join(
             c.maximized_horizontal = not c.maximized_horizontal
             c:raise()
         end ,
-        {description = "(un)maximize horizontally", group = "client"}),
-	awful.key({ modkey, 'Control' }, 't',
-  		awful.titlebar.toggle,
-		{description = 'toggle title bar', group = 'client'}) )
+        {description = "(un)maximize horizontally", group = "client"})
+)
 
 -- Bind all key numbers to tags.
 -- Be careful: we use keycodes to make it work on any keyboard layout.
@@ -554,7 +508,7 @@ awful.rules.rules = {
 
     -- Add titlebars to normal clients and dialogs
     { rule_any = {type = { "normal", "dialog" }
-      }, properties = { titlebars_enabled = false }
+      }, properties = { titlebars_enabled = true }
     },
 
     -- Set Firefox to always map on the tag named "2" on screen 1.
@@ -627,11 +581,5 @@ client.connect_signal("focus", function(c) c.border_color = beautiful.border_foc
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 -- }}}
 
--- Gaps
-beautiful.useless_gap = 5
-
---Autostart
---awful.spawn.with_shell("nitrogen --restore")
-awful.spawn.with_shell("sh ~/.fehbg &")
-awful.spawn.with_shell("dropbox")
-awful.spawn.with_shell("compton")
+-- Startup Applications
+awful.spawn("nitrogen --restore")
