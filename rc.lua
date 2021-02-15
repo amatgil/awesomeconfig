@@ -6,17 +6,13 @@ pcall(require, "luarocks.loader")
 local gears = require("gears")
 local awful = require("awful")
 require("awful.autofocus")
---Use collision (in ~./config/awesome/collision, the way to control floating windows when you don't have title bars
---require("collision")()
---Wibar but better i think
---local base16 = require("base16")
--- My wibars
---local wibars = require("wibars")
---local arrowlain = wibars.arrowlain
+local base16 = require("base16")
+
+local wibars = require("wibars")
+local arrowlain = wibars.arrowlain
 
 local awesome, client, mouse, screen, tag = awesome, client, mouse, screen, tag
 local ipairs, string, os, table, tostring, tonumber, type = ipairs, string, os, table, tostring, tonumber, type
--- Enable Alt-Tab
 -- Widget and layout library
 local wibox = require("wibox")
 -- Theme handling library
@@ -250,8 +246,27 @@ awful.screen.connect_for_each_screen(function(s)
 })
 
     -- Create the wibox
-    s.mywibox = awful.wibar({ position = "top", screen = s, bg = beautiful.bg_normal .. "ff", opacity=0.9, height=20  })
+   -- s.mywibox = arrowlain.wibar({ 
+	--	position = "top",
+	--	screen = s,
+	--	bg = beautiful.bg_normal .. "ff",
+	--	opacity=0.9,
+	--	height=20,
+	--	--Added for the arrowlain
+	--	visible = true,
+	--	cs = base16.solarized_dark,
+	--	direction = "left",
+	--	spacer = true,
+	--	compact = false})
 
+    s.mywibox = awful.wibar({ 
+		position = "top",
+		screen = s,
+		bg = beautiful.bg_normal .. "ff",
+		opacity=0.9,
+		height=20})
+
+	tbox_separator = wibox.widget.textbox(" | ")
     -- Add widgets to the wibox
     s.mywibox:setup {
         layout = wibox.layout.align.horizontal,
@@ -266,11 +281,12 @@ awful.screen.connect_for_each_screen(function(s)
             layout = wibox.layout.fixed.horizontal,
 			volumearc_widget(),
 			ram_widget(),
+			tbox_separator, --Just a pipe between widgets
 			cpu_widget(),
-			--awful.widget.watch('~/.config/awsome/temp.sh', 15),
-			--awful.widget.watch('bash -c "sensors | grep Core | awk \'{print $3}\' | sed -e \"s/+//\" | sed -e \"s/°C//\" | awk \'BEGIN { max = 0 }{if ($1 > max) max = $1} END {print max}\'"', 15),
-			awful.widget.watch('bash -c "maxtemp.sh"', 5),
+			tbox_separator, --Just a pipe between widgets
+			awful.widget.watch('bash -c "maxtemp.sh"', 15),
             --mykeyboardlayout,
+			tbox_separator, --Just a pipe between widgets
             wibox.widget.systray(),
             mytextclock,
             s.mylayoutbox,
@@ -373,8 +389,9 @@ globalkeys = gears.table.join(
 
     -- Prompt
     awful.key({ modkey },            "r",     function () 
-	awful.util.spawn("dmenu_run") end,
-              {description = "run dmenu", group = "launcher"}),
+	--awful.util.spawn("dmenu_run") end,
+	awful.util.spawn("rofi -show run") end,
+              {description = "run rofi", group = "launcher"}),
 
     awful.key({ modkey }, "x",
               function ()
