@@ -253,54 +253,36 @@ awful.screen.connect_for_each_screen(function(s)
         end
     end
 })
+awful.screen.connect_for_each_screen(function(s)
+-- {{{ Code that you should add
+    s.mywibox = arrowlain.wibar ({
+	position 	= "top",
+	visible   	= true,
+	height   	= 16,
+	screen 		= s,
+	cs		= base16.solarized_dark,
+	font   		= beautiful.font,
+	direction 	= "left",
+	spacer		= true,
+	compact		= false
+    })
+-- }}}
+end)
 
-    -- Create the wibox
-   -- s.mywibox = arrowlain.wibar({ 
-	--	position = "top",
-	--	screen = s,
-	--	bg = beautiful.bg_normal .. "ff",
-	--	opacity=0.9,
-	--	height=20,
-	--	--Added for the arrowlain
-	--	visible = true,
-	--	cs = base16.solarized_dark,
-	--	direction = "left",
-	--	spacer = true,
-	--	compact = false})
-
-    s.mywibox = awful.wibar({ 
-		position = "top",
-		screen = s,
-		bg = beautiful.bg_normal .. "ff",
-		opacity=0.9,
-		height=20})
-
-	tbox_separator = wibox.widget.textbox(" | ")
     -- Add widgets to the wibox
-    s.mywibox:setup {
-        layout = wibox.layout.align.horizontal,
-        { -- Left widgets
-            layout = wibox.layout.fixed.horizontal,
-            --mylauncher,
-            s.mytaglist
-            --s.mypromptbox,
-        },
-        s.mytasklist, -- Middle widget
-        { -- Right widgets
-            layout = wibox.layout.fixed.horizontal,
-			volumearc_widget(),
-			ram_widget(),
-			tbox_separator, --Just a pipe between widgets
-			cpu_widget(),
-			tbox_separator, --Just a pipe between widgets
-			awful.widget.watch('bash -c "maxtemp.sh"', 15),
-            --mykeyboardlayout,
-			tbox_separator, --Just a pipe between widgets
-            wibox.widget.systray(),
-            mytextclock,
-            s.mylayoutbox,
-        },
-    }
+	--tbox_separator = wibox.widget.textbox(" | ")
+    --s.mywibox:setup {
+        --layout = wibox.layout.align.horizontal,
+        --{ -- Left widgets
+            ----mylauncher,
+            --s.mytaglist
+            ----s.mypromptbox,
+        --},
+        --s.mytasklist, -- Middle widget
+        --{ -- Right widgets
+            --arrowlain.widget.systray(),
+        --},
+    --}
 end)
 -- }}}
 
