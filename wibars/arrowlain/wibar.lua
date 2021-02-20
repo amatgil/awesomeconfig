@@ -11,6 +11,12 @@ local awful   = require("awful")
 local wibox   = require("wibox")
 local wibars  = require("wibars")
 local helpers = require("lainmod.helpers")
+--My Code
+local beautiful = require("beautiful")
+local naughty = require("naughty")
+local menubar = require("menubar")
+local hotkeys_popup = require("awful.hotkeys_popup")
+require("awful.hotkeys_popup.keys")
 
 local secrets   = wibars.arrowlain.secrets
 local my_table  = awful.util.table or gears.table -- 4.{0,1} compatibility
@@ -127,18 +133,6 @@ local function factory(args)
 		cs.palette.barbg_violet,
 		false
 	)
-	-- Battery
-	local nbattery = widgets.battery(widgetsettings)
-	local wbattery = arrow_wrapper (
-		nbattery,
-		cs.palette.barbg_violet,
-		dir,
-		margins.battery.left,
-		margins.battery.right,
-		spacer,
-		cs.palette.barbg_yellow,
-		false
-	)
 	-- ALSA volume
 	local nvolume = widgets.alsavol(widgetsettings)
 	local wvolume = arrow_wrapper (
@@ -242,27 +236,6 @@ local function factory(args)
 		false
 	)
 	-- Mail
-	local mailw_set = helpers.deep_table_copy(widgetsettings)
-	mailw_set.notification_preset.fg = cs.palette.barbrfg
-	mailw_set.notification_preset.bg = cs.palette.barbrbg
-	mailw_set.fg = cs.palette.barbrfg
-	local nmail1 = widgets.mail(mailw_set, secrets.mail1.account, secrets.mail1.password, 1)
-	local nmail2 = widgets.mail(mailw_set, secrets.mail2.account, secrets.mail2.password, 0)
-	local nmail = wibox.widget {
-		wibox.container.margin(nmail1, margins.mail1.left, margins.mail1.right),
-		wibox.container.margin(nmail2, margins.mail2.left, margins.mail2.right),
-		layout = wibox.layout.align.horizontal
-	}
-	local wmail = arrow_wrapper (
-		nmail,
-		cs.palette.barbrbg,
-		dir,
-		margins.mail.left,
-		margins.mail.right,
-		spacer,
-		"alpha",
-		false
-	)
 
 	-- Naked widgets
 	widgetsettings.fg = cs.palette.barfg
@@ -313,13 +286,15 @@ local function factory(args)
 		awful.button({ }, 5, function() awful.layout.inc(-1) end)
 	) )
 
+
+
+
 	-- Add widgets to wibar
 	wibar:setup {
 		layout = wibox.layout.align.horizontal,
 		{ -- Left widgets
 			layout = wibox.layout.fixed.horizontal,
 			arrowlain_left,
-			wibox.widget.systray(),
 			scr.mypromptbox,
 		},
 		-- Middle widget
@@ -327,6 +302,7 @@ local function factory(args)
 		{ -- Right widgets
 			layout = wibox.layout.fixed.horizontal,
 			arrowlain_right,
+			wibox.widget.systray(),
 			mylayoutbox,
 		},
 	}
