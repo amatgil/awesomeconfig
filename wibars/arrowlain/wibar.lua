@@ -281,20 +281,13 @@ local function factory(args)
 	-- Order widgets and make single
 	local wt = {
 		wclock,
-		wweather,
-		wbattery,
 		wvolume,
-		wkblayout,
 		wcpu,
 		wramsys,
 		wfshdd,
 		wnet,
-		wmail,
 		napache,
 		nmariadb,
-		nphpfpm,
-		nsmb,
-		nqemu
 	}
 	wt = order_widgets(wt, dir)
 	local single = helpers.make_single_widget(wt, wibox.layout.align.horizontal)

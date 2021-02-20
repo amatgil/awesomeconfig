@@ -40,6 +40,7 @@ local has_fdo, freedesktop = pcall(require, "freedesktop")
 local cpu_widget = require("awesome-wm-widgets.cpu-widget.cpu-widget")
 local volumearc_widget = require("awesome-wm-widgets.volumearc-widget.volumearc")
 local ram_widget = require("awesome-wm-widgets.ram-widget.ram-widget")
+local calendar_widget = require("awesome-wm-widgets.calendar-widget.calendar")
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -146,6 +147,14 @@ mykeyboardlayout = awful.widget.keyboardlayout()
 -- {{{ Wibar
 -- Create a textclock widget
 mytextclock = wibox.widget.textclock()
+local cw = calendar_widget({
+theme = 'nord',
+placement = 'top_right'
+})
+mytextclock:connect_signal("button::press",
+    function(_, _, _, button)
+        if button == 1 then cw.toggle() end
+    end)
 
 -- Create a wibox for each screen and add it
 local taglist_buttons = gears.table.join(
@@ -450,7 +459,7 @@ clientkeys = gears.table.join(
             c:raise()
         end ,
         {description = "(un)maximize horizontally", group = "client"}),
-	awful.key({ modkey, 'Control' }, 't',
+	awful.key({ modkey, 'Shift' }, 't',
   		awful.titlebar.toggle,
 		{description = 'toggle title bar', group = 'client'}) )
 
@@ -652,3 +661,7 @@ beautiful.useless_gap = 5
 awful.spawn.with_shell("sh ~/.fehbg &")
 awful.spawn.with_shell("dropbox")
 awful.spawn.with_shell("compton")
+--Set keyboard to us style (because many apps require that you press a key that needs shift pressed in the good version of the keyboard (catalan)
+awful.spawn.with_shell("setxkbmap us")
+--Undo settings keyboard to us style:
+--awful.spawn.with_shell("setxkbmap es")
