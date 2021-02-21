@@ -662,6 +662,6 @@ awful.spawn.with_shell("sh ~/.fehbg &")
 awful.spawn.with_shell("dropbox")
 awful.spawn.with_shell("compton")
 --Set keyboard to us style (because many apps require that you press a key that needs shift pressed in the good version of the keyboard (catalan)
-awful.spawn.with_shell("setxkbmap us")
+--awful.spawn.with_shell("setxkbmap us")
 --Undo settings keyboard to us style:
 --awful.spawn.with_shell("setxkbmap es")
